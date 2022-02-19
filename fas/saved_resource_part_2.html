@@ -1,0 +1,269 @@
+﻿<!DOCTYPE html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Поиск организаций в реестре субъектов естественных монополий</title>
+
+	
+	<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+	<script type="text/javascript" src="./jquery-3.1.0.js.Без названия"></script>
+	<script type="text/javascript" src="./bootstrap.js.Без названия"></script>
+	<script type="text/javascript" src="./report.js.Без названия"></script>
+	<link rel="stylesheet" href="./bootstrap.css" type="text/css">
+	<link rel="stylesheet" href="./searchstyle.css" type="text/css">
+</head>
+<body>
+	<div>
+		
+
+<script type="text/javascript">
+	ReportUrl = '/FindCEM/Search/Report';
+</script>
+
+<div class="top-text">
+	<span class="test-mode" title="Сервис находится в тестовом режиме. В случае возникновения вопросов по наполнению реестра СЕМ, обращайтесь по адресу электронной почты ebelookaya@fas.gov.ru"></span>
+	<div class="version-div">
+		<span>Версия: 1.1</span>
+	</div>
+</div>
+
+<div class="search-box">
+	<input name="__RequestVerificationToken" type="hidden" value="vzGbBoDeILToP2kVcXThkwc62wNICFNBx-xVNPZZsD9WlOCH9KVmo0EYvoenJqiUW7yLlN7s9IrYA3J7O0q4fwkIfOvotAeUGJ5R3jn6Phc1">
+
+	<div class="container-fluid">
+
+		<div class="row">
+			<div class="col-xs-6">
+				<div class="form-group">
+					<label for="regPart" class="control-label">Тип реестра</label>
+					<select id="regPart" name="RegTypeID" class="form-control" onchange="OnTypeSelected()">
+						<option selected="selected" value="0">&lt;Все реестры&gt;</option>
+							<option value="3">Реестр субъектов естественных монополий в области связи</option>
+							<option value="4">Реестр субъектов естественных монополий в сфере водоснабжения и водоотведения с использованием централизованных систем, систем коммунальной инфраструктуры</option>
+							<option value="5">Реестр субъектов естественных монополий в сфере захоронения радиоактивных отходов</option>
+							<option value="1">Реестр субъектов естественных монополий в топливно-энергетическом комплексе</option>
+							<option value="2">Реестр субъектов естественных монополий на транспорте</option>
+					</select>
+				</div>
+			</div>
+			<div class="col-xs-6">
+				<div class="form-group">
+					<label for="orgName" class="control-label">Название организации</label>
+					<input id="orgName" name="OrgName" type="text" class="form-control" value="" placeholder="Название организации">
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-xs-6">
+				<div class="form-group">
+					<label for="regType" class="control-label">Разделы реестра</label>
+					<select id="regType" name="RegPartId" class="form-control" disabled="">
+						<option selected="selected" value="0">&lt;Все разделы реестра&gt;</option>
+							<option value="31" parent="3">Раздел I «Услуги общедоступной почтовой связи»</option>
+							<option value="32" parent="3">Раздел II «Услуги общедоступной электросвязи»</option>
+							<option value="41" parent="4">«Водоснабжение и водоотведение с использованием централизованных систем, систем коммунальной инфраструктуры»</option>
+							<option value="51" parent="5">«Захоронение радиоактивных отходов»</option>
+							<option value="11" parent="1">Раздел I «Услуги по передаче электрической и (или) тепловой энергии»</option>
+							<option value="12" parent="1">Раздел II «Транспортировка газа по трубопроводам»</option>
+							<option value="13" parent="1">Раздел III «Транспортировка нефти и (или) нефтепродуктов по магистральным трубопроводам»</option>
+							<option value="14" parent="1">Раздел IV «Услуги по оперативно-диспетчерскому управлению»</option>
+							<option value="21" parent="2">Раздел I «Железнодорожные перевозки»</option>
+							<option value="22" parent="2">Раздел II «Услуги аэропортов»</option>
+							<option value="23" parent="2">Раздел III «Услуги в портах и (или) транспортных терминалах, услуги по использованию инфраструктуры внутренних водных путей»</option>
+							<option value="24" parent="2">Раздел IV «Ледокольная проводка судов, ледовая лоцманская проводка судов в акватории Северного морского пути»</option>
+					</select>
+				</div>
+			</div>
+			<div class="col-xs-6">
+				<div class="form-group">
+					<label for="iNN" class="control-label">ИНН</label>
+					<input id="iNN" name="INN" class="form-control" type="text" value="" placeholder="ИНН">
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-xs-6">
+				<div class="form-group">
+					<label for="region" class="control-label">Субъект РФ</label>
+					<select id="region" name="RegionID" class="form-control">
+						<option selected="selected" value="0">&lt;Все субъекты&gt;</option>
+							<option value="2653">Алтайский край</option>
+							<option value="2666">Амурская область</option>
+							<option value="2607">Архангельская область</option>
+							<option value="2623">Астраханская область</option>
+							<option value="2587">Белгородская область</option>
+							<option value="2588">Брянская область</option>
+							<option value="2589">Владимирская область</option>
+							<option value="2624">Волгоградская область</option>
+							<option value="2608">Вологодская область</option>
+							<option value="2590">Воронежская область</option>
+							<option value="2604">г. Москва</option>
+							<option value="2672">г.Байконур</option>
+							<option value="2614">г.Санкт-Петербург</option>
+							<option value="2586">г.Севастополь</option>
+							<option value="2670">Еврейская автономная область</option>
+							<option value="2659">Забайкальский край</option>
+							<option value="2591">Ивановская область</option>
+							<option value="2661">Иркутская область</option>
+							<option value="2618">Кабардино-Балкарская республика</option>
+							<option value="2609">Калининградская область</option>
+							<option value="2592">Калужская область</option>
+							<option value="2667">Камчатский край</option>
+							<option value="2620">Карачаево-Черкесская республика</option>
+							<option value="2655">Кемеровская область</option>
+							<option value="2633">Кировская область</option>
+							<option value="2593">Костромская область</option>
+							<option value="2622">Краснодарский край</option>
+							<option value="2654">Красноярский край</option>
+							<option value="2643">Курганская область</option>
+							<option value="2594">Курская область</option>
+							<option value="2610">Ленинградская область</option>
+							<option value="2595">Липецкая область</option>
+							<option value="2668">Магаданская область</option>
+							<option value="2596">Московская область</option>
+							<option value="2611">Мурманская область</option>
+							<option value="36326">Ненецкий автономный округ</option>
+							<option value="2634">Нижегородская область</option>
+							<option value="2612">Новгородская область</option>
+							<option value="2656">Новосибирская область</option>
+							<option value="2657">Омская область</option>
+							<option value="2635">Оренбургская область</option>
+							<option value="2597">Орловская область</option>
+							<option value="2636">Пензенская область</option>
+							<option value="137564">Пермский край</option>
+							<option value="2664">Приморский край</option>
+							<option value="2613">Псковская область</option>
+							<option value="2615">Республика Адыгея</option>
+							<option value="2649">Республика Алтай</option>
+							<option value="2628">Республика Башкортостан</option>
+							<option value="2650">Республика Бурятия</option>
+							<option value="2616">Республика Дагестан</option>
+							<option value="2617">Республика Ингушетия</option>
+							<option value="2619">Республика Калмыкия</option>
+							<option value="2605">Республика Карелия</option>
+							<option value="2606">Республика Коми</option>
+							<option value="2585">Республика Крым</option>
+							<option value="2629">Республика Марий Эл</option>
+							<option value="2630">Республика Мордовия</option>
+							<option value="2663">Республика Саха (Якутия)</option>
+							<option value="2621">Республика Северная Осетия-Алания</option>
+							<option value="2642">Республика Татарстан</option>
+							<option value="2651">Республика Тыва</option>
+							<option value="2652">Республика Хакасия</option>
+							<option value="2625">Ростовская область</option>
+							<option value="2598">Рязанская область</option>
+							<option value="2638">Самарская область</option>
+							<option value="2639">Саратовская область</option>
+							<option value="2669">Сахалинская область</option>
+							<option value="2644">Свердловская область</option>
+							<option value="2599">Смоленская область</option>
+							<option value="2627">Ставропольский край</option>
+							<option value="2600">Тамбовская область</option>
+							<option value="2601">Тверская область</option>
+							<option value="2658">Томская область</option>
+							<option value="2602">Тульская область</option>
+							<option value="2645">Тюменская область</option>
+							<option value="2631">Удмуртская республика</option>
+							<option value="2640">Ульяновская область</option>
+							<option value="2665">Хабаровский край</option>
+							<option value="2647">Ханты-Мансийский автономный округ</option>
+							<option value="2646">Челябинская область</option>
+							<option value="2626">Чеченская республика</option>
+							<option value="2632">Чувашская республика</option>
+							<option value="2671">Чукотский автономный округ</option>
+							<option value="2648">Ямало-Ненецкий автономный округ</option>
+							<option value="2603">Ярославская область</option>
+					</select>
+				</div>
+			</div>
+			<div class="col-xs-6">
+				<div class="form-group">
+					<label for="oKPO" class="control-label">ОКПО</label>
+					<input id="oKPO" name="OKPO" class="form-control" type="text" value="" placeholder="ОКПО">
+				</div>
+			</div>
+
+			<div class="col-xs-6">
+				<div class="form-group">
+
+				</div>
+			</div>
+
+			<div class="col-xs-6">
+				<div class="form-group">
+					<label for="oGRN" class="control-label">ОГРН</label>
+					<input id="oGRN" name="ОГРН" class="form-control" type="text" value="" placeholder="ОГРН">
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="center-block text-center div-buttons">
+		<button class="btn btn-primary" type="button" onclick="OnSearchClick()">
+			<span class="glyphicon glyphicon-search"></span>
+			<span> Найти</span>
+		</button>
+	</div>
+
+	<div id="RowExport" class="row">
+		<div class="col-xs-12 export-to-pdf-col">
+			<a href="http://apps.eias.fas.gov.ru/FindCEM/Search/ReportPdf" class="btn btn-default export-to-pdf" role="button">
+				<span class="glyphicon glyphicon-file"></span>
+				<span> Экспорт в PDF</span>
+			</a>
+			<a href="http://apps.eias.fas.gov.ru/FindCEM/Search/ReportXls" class="btn btn-default export-to-pdf" role="button">
+				<span class="glyphicon glyphicon-file"></span>
+				<span> Экспорт в XLS</span>
+			</a>
+		</div>
+	</div>
+
+	<div id="LoaderSplash" class="loader-splash bg-color-gray" hidden="">
+		<img src="./preloader.gif" class="loader-gif">
+	</div>
+</div>
+<div id="SuccessTable"><table id="report-table" class="table table-bordered table-striped table-condensed report-table">
+	<thead>
+		<tr>
+			<th>Реестр</th>
+			<th>Раздел</th>
+			<th>Номер</th>
+			<th>Регион</th>
+			<th>Организация</th>
+			<th>Реквизиты</th>
+			<th>Адрес</th>
+			<th>Номер приказа о включении</th>
+			<th>Дата приказа о включении</th>
+		</tr>
+	</thead>
+	<tbody>
+			<tr>
+				<td>Реестр субъектов естественных монополий в топливно-энергетическом комплексе</td>
+				<td>Раздел II «Транспортировка газа по трубопроводам»</td>
+				<td>14.2.7</td>
+				<td>Республика Саха (Якутия)</td>
+				<td>ООО «Прометей-Сервис»</td>
+				<td><nobr><div>ИНН: 111222333</div></nobr><nobr><div>ОГРН: 1151447000748</div></nobr></td>
+				<td>Ул. Автодорожная, д. 13, корпус «А», офис 1, 677007</td>
+				<td>1475/17</td>
+				<td>09.11.2017</td>
+			</tr>
+			<tr>
+				<td>Реестр субъектов естественных монополий на транспорте</td>
+				<td>Раздел III «Услуги в портах и (или) транспортных терминалах, услуги по использованию инфраструктуры внутренних водных путей»</td>
+				<td>14/3/2</td>
+				<td>Республика Саха (Якутия)</td>
+				<td>ЗАО АК "АЛРОСА" (Ленский речной порт ПУ "Алмаздортранс")</td>
+				<td><nobr><div>ИНН: 65655454</div></nobr><nobr><div>ОГРН: 1151447000748</div></nobr></td>
+				<td>678140, Республика Саха (Якутия), г. Ленск, ул. Набережная, 123</td>
+				<td>28/11-3-р</td>
+				<td>11.07.2001</td>
+			</tr>
+	</tbody>
+</table></div>
+	</div>
+
+
+</body></html>
