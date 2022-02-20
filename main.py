@@ -26,9 +26,9 @@ def get_inn():
 
     engine = create_engine('sqlite:///fas_table.sqlite3', echo=True)
 
-    df.to_sql(con=engine, name='fas_table', if_exists='append', index_label='id')
+    df.to_sql(con=engine, name='fas_table', if_exists='append')
 
-    upsert(con=engine, df=df, table_name='fas_table', if_row_exists='update')
+    # upsert(con=engine, df=df, table_name='fas_table', if_row_exists='update')
 
     # df.index.name = 'id'
     # pandabase.to_sql(df, table_name='fas_table', con=engine, how='upsert')

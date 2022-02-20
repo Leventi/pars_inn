@@ -3,11 +3,16 @@ from sqlalchemy import Integer
 
 engine = create_engine('sqlite:///fas_table.sqlite3', echo=True)
 
-metadata_obj = MetaData()
+metadata = MetaData(bind=engine)
 
-fas_table = Table('fas_table', metadata_obj,
+fas_table = Table('fas_table', metadata,
                   Column('id', Integer, primary_key=True),
                   Column('inn', Integer)
                   )
 
-metadata_obj.create_all(engine)
+metadata.create_all(engine)
+
+
+
+
+

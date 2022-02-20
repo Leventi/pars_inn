@@ -19,4 +19,3 @@ inn_list = [re.sub(pattern, '', item) for item in requisites]
 
 print(inn_list)
 
-#проверить урл ReportUrl = '/FindCEM/Search/Report
