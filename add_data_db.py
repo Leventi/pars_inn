@@ -43,12 +43,21 @@ def get_inn_list_from_db():
 
     for i in db_inn_list:
         if i not in inn_list:
-            with open("log_changes.txt", "a", encoding="utf-8") as file:
-                file.write(f"Данный ИНН отсутствует импорте {i} - Дата проверки: {now:{time_format}} \n")
-
             date_to_update = datetime.datetime.utcnow()
+
+            """Получаем дату по ИНН клиента которого не было в импорте"""
+            date_mark = session.query(InnFas).filter(InnFas.inn == i).first()
+            some_g = date_mark.date_chk
+            print(date_mark.date_chk)
+
+            if date_mark.date_chk is None:
+                with open("log_changes.txt", "a", encoding="utf-8") as file:
+                    file.write(f"Данный ИНН отсутствует импорте {i} - Дата проверки: {now:{time_format}} \n")
+
+            """добавляем дату если ИНН нет в импорте"""
             query = session.query(InnFas).filter(InnFas.inn == i). \
                 update({InnFas.date_chk: date_to_update}, synchronize_session=False)
+
             session.commit()
 
     print(f"Разность - {diff_list_inn}")
