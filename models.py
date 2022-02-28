@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, MetaData, Table, Column, String, DateTime, Integer
 import databases
 
-DATABASE_URL = 'sqlite:///fas_table3.sqlite3'
+DATABASE_URL = 'sqlite:///fas_table4.sqlite3'
 database = databases.Database(DATABASE_URL)
 
 engine = create_engine(
@@ -12,10 +12,19 @@ engine = create_engine(
 
 metadata = MetaData(bind=engine)
 
-fas_table = Table('inn_date', metadata,
+fas_table = Table('full_fas_table', metadata,
                   Column('id', Integer, primary_key=True),
-                  # Column('company_name', String),
                   Column('inn', Integer),
+                  Column('kpp', Integer),
+                  Column('ogrn', String),
+                  Column('company_name', String),
+                  Column('registry', String),
+                  Column('section', String),
+                  Column('doc_number', String),
+                  Column('region', String),
+                  Column('adress', String),
+                  Column('order_number', String),
+                  Column('order_date', String),
                   Column('date_chk', DateTime)
                   )
 

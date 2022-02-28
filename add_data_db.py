@@ -17,13 +17,49 @@ time_format = "%Y-%m-%d %H:%M:%S"
 
 
 class InnFas(Base):
-    __tablename__ = 'inn_date'
+    __tablename__ = 'full_fas_table'
     id = Column(Integer, primary_key=True)
     inn = Column(Integer, unique=True)
     date_chk = Column(DateTime)
 
 
 Base.metadata.create_all(engine)
+
+
+"""
+Проверяем есть ли такой ИНН. Если нет, создаём запись.
+"""
+def get_or_create(model, **kwargs):
+    instance = get_instance(model, **kwargs)
+    if instance is None:
+        instance = create_instance(model, **kwargs)
+    return instance
+
+
+def create_instance(model, **kwargs):
+    try:
+        instance = model(**kwargs)
+        session.add(instance)
+        session.flush()
+
+        with open("log_changes.txt", "a", encoding="utf-8") as file:
+            file.write(f"Добавили новый ИНН {instance.inn} - Дата записи: {now:{time_format}} \n")
+
+
+    except Exception as msg:
+        msg_text = 'model:{}, args:{} => msg:{}'
+        log.instance_logger(msg_text.format(model, kwargs, msg))
+        session.rollback()
+        raise(msg)
+    return instance
+
+
+def get_instance(model, **kwargs):
+    try:
+        return session.query(model).filter_by(**kwargs).first()
+    except NoResultFound:
+        return
+
 
 
 """
@@ -60,39 +96,6 @@ def get_inn_list_from_db():
     print(f"Разность - {diff_list_inn}")
 
 
-"""
-Проверяем есть ли такой ИНН. Если нет, создаём запись.
-"""
-def get_or_create(model, **kwargs):
-    instance = get_instance(model, **kwargs)
-    if instance is None:
-        instance = create_instance(model, **kwargs)
-    return instance
-
-
-def create_instance(model, **kwargs):
-    try:
-        instance = model(**kwargs)
-        session.add(instance)
-        session.flush()
-
-        with open("log_changes.txt", "a", encoding="utf-8") as file:
-            file.write(f"Добавили новый ИНН {instance.inn} - Дата записи: {now:{time_format}} \n")
-
-
-    except Exception as msg:
-        msg_text = 'model:{}, args:{} => msg:{}'
-        log.instance_logger(msg_text.format(model, kwargs, msg))
-        session.rollback()
-        raise(msg)
-    return instance
-
-
-def get_instance(model, **kwargs):
-    try:
-        return session.query(model).filter_by(**kwargs).first()
-    except NoResultFound:
-        return
 
 
 
