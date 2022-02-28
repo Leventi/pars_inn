@@ -1,37 +1,35 @@
-import re
-import pandas as pd
-import pangres
-import requests
-from bs4 import BeautifulSoup
-from sqlalchemy import create_engine
-from pangres import upsert
+from fastapi import FastAPI
+from models import database, fas_table
 
 
-URL = "./fas/saved_resource_part_2.html"
-page = open(URL, encoding='utf-8')
-
-inn_dict = {'inn': []}
+app = FastAPI()
 
 
-def get_inn():
-    # response = requests.get(URL)
-    section = BeautifulSoup(page.read(), "html.parser")
-    items_list = section.findAll('nobr', text=re.compile('ИНН'))
-
-    for item in items_list:
-        inn_dict['inn'].append((item.get_text())[5:])
-
-    df = pd.DataFrame.from_dict(inn_dict)
-    print(df)
-
-    engine = create_engine('sqlite:///fas_table.sqlite3', echo=True)
-
-    df.to_sql(con=engine, name='fas_table', if_exists='append')
-
-    # upsert(con=engine, df=df, table_name='fas_table', if_row_exists='update')
-
-    # df.index.name = 'id'
-    # pandabase.to_sql(df, table_name='fas_table', con=engine, how='upsert')
+@app.on_event("startup")
+async def startup():
+    """ когда приложение запускается устанавливаем соединение с БД """
+    await database.connect()
 
 
-get_inn()
+@app.on_event("shutdown")
+async def shutdown():
+    """ когда приложение останавливается разрываем соединение с БД """
+    await database.disconnect()
+
+
+@app.get("/inn/")
+async def read_inn():
+    """ получаем все ИНН для теста """
+    query = fas_table.select()
+    return await database.fetch_all(query)
+
+
+@app.get("/inn/{company_inn}")
+async def read_inn(company_inn: int):
+    """ получаем ИНН по указанному в запросе """
+    query = fas_table.select().where(fas_table.c.inn == company_inn)
+    return await database.fetch_all(query)
+
+
+
+

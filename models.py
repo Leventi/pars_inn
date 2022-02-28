@@ -1,7 +1,14 @@
-from sqlalchemy import create_engine, MetaData, Table, Column, String, DateTime
-from sqlalchemy import Integer
+from sqlalchemy import create_engine, MetaData, Table, Column, String, DateTime, Integer
+import databases
 
-engine = create_engine('sqlite:///fas_table3.sqlite3', echo=True)
+DATABASE_URL = 'sqlite:///fas_table3.sqlite3'
+database = databases.Database(DATABASE_URL)
+
+engine = create_engine(
+    DATABASE_URL,
+    connect_args={"check_same_thread": False},
+    echo=True
+)
 
 metadata = MetaData(bind=engine)
 
