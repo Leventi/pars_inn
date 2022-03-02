@@ -1,6 +1,8 @@
 import re
 from urllib.request import urlopen
 from lxml import etree
+from tables import sessionsql, InnFas
+# from add_data_db import get_instance
 
 
 URL = "./fas/saved_resource_part.html"
@@ -11,44 +13,47 @@ response = urlopen('file:' + URL)
 htmlparser = etree.HTMLParser()
 tree = etree.parse(response, htmlparser)
 
-pattern = re.compile(r'(^\w+:\s)')
+all_data_list = tree.xpath('//tbody/tr')
 
-inn_raw = tree.xpath('//nobr/div[contains(text(), "ИНН")]/text()')
-inn_list_str = [re.sub(pattern, '', item) for item in inn_raw]
-inn_list = [int(i) for i in inn_list_str]
+try:
+    for i in all_data_list:
+        company_name = i.xpath('.//td[5]/text()')[0]
+        registry = i.xpath('.//td[1]/text()')[0]
+        section = i.xpath('.//td[2]/text()')[0]
+        doc_number = i.xpath('.//td[3]/text()')[0]
+        region = i.xpath('.//td[4]/text()')[0]
+        address = i.xpath('.//td[7]/text()')[0]
+        order_number = i.xpath('.//td[8]/text()')[0]
+        order_date = i.xpath('.//td[9]/text()')[0]
 
-kpp_raw = tree.xpath('//nobr/div[contains(text(), "КПП")]/text()')
-kpp_list_str = [re.sub(pattern, '', item) for item in inn_raw]
-kpp_list = [int(i) for i in inn_list_str]
+        inn_raw = i.xpath('.//td[6]/nobr/div[contains(text(), "ИНН")]/text()')
 
-ogrn_raw = tree.xpath('//nobr/div[contains(text(), "ОГРН")]/text()')
-ogrn_list_str = [re.sub(pattern, '', item) for item in inn_raw]
-ogrn_list = [int(i) for i in inn_list_str]
-
-
-company_name = tree.xpath('//tr/td[5]/text()')
-registry = tree.xpath('//tr/td[1]/text()')
-section = tree.xpath('//tr/td[2]/text()')
-doc_number = tree.xpath('//tr/td[3]/text()')
-region = tree.xpath('//tr/td[4]/text()')
-adress = tree.xpath('//tr/td[7]/text()')
-order_number = tree.xpath('//tr/td[8]/text()')
-order_date = tree.xpath('//tr/td[9]/text()')
+        if len(inn_raw) == 0:
+            inn_raw = None
+        else:
+            pattern = re.compile(r'(^\w+:\s)')
+            inn_raw = re.sub(pattern, '', inn_raw[0])
 
 
-full_fas_dict = {
-    'inn': inn_list,
-    'kpp': kpp_list,
-    'ogrn': ogrn_list,
-    'company_name': company_name,
-    'registry': registry,
-    'section': section,
-    'doc_number': doc_number,
-    'region': region,
-    'adress': adress,
-    'order_number': order_number,
-    'order_date': order_date
-}
+        full_fas_dict = {
+            'inn': inn_raw,
+            # 'kpp': kpp_list,
+            # 'ogrn': ogrn_list,
+            'company_name': company_name,
+            'registry': registry,
+            'section': section,
+            'doc_number': doc_number,
+            'region': region,
+            'address': address,
+            'order_number': order_number,
+            'order_date': order_date
+        }
+
+        instance = sessionsql.add(InnFas(**full_fas_dict))
+        sessionsql.commit()
+except:
+    print(f'Проблема при разборе или записи входящих данных')
+
 
 
 

@@ -1,8 +1,11 @@
 from requests import Session
 from bs4 import BeautifulSoup
+import re
+from lxml import etree
+from tables import sessionsql, InnFas
 
 
-def get_token(text):
+def get_token_monopoly(text):
     soup = BeautifulSoup(text, 'html.parser')
     el = soup.find("input", {"name": "__RequestVerificationToken"})
     return el['value']
@@ -25,11 +28,11 @@ headers = {
 }
 
 
-"""Получаем cookie"""
+#получаем cookie сайта
 get_cookies = session.get(url=cookies_url, headers=headers)
 
-"""Получаем токен формы"""
-token = get_token(get_cookies.text)
+#получаем токен формы с сайта apps.eias.fas.gov.ru
+token = get_token_monopoly(get_cookies.text)
 
 
 payload = {
@@ -48,7 +51,7 @@ headers = {
     'Accept-Encoding': 'gzip, deflate',
     'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
     'Host': 'apps.eias.fas.gov.ru',
-    'Origin': 'http://apps.eias.fas.gov.ru',
+    # 'Origin': 'http://apps.eias.fas.gov.ru',
     'Referer': 'http://apps.eias.fas.gov.ru/FindCem/',
     'Cache-Control': 'no-cache',
     'Connection': 'keep-alive',
@@ -57,10 +60,59 @@ headers = {
     'X-Requested-With': 'XMLHttpRequest',
 }
 
-"""Получаем таблицу с данными"""
+"""
+получаем таблицу с данными: 
+ИНН, Наименование компании, Реестр, Раздел, Номер, Регион, Адрес, Номер и дата приказа о включении
+"""
 resp = session.post(url=url, headers=headers, data=payload)
-print(resp.text)
 
-with open("fas_table.html", "w", encoding="utf-8") as f:
-    f.write(resp.text)
+
+
+
+
+# Разбор ответа
+htmlparser = etree.HTMLParser()
+tree = etree.fromstring(resp.text, htmlparser)
+
+all_data_list = tree.xpath('//tbody/tr')
+
+for item in all_data_list:
+    try:
+        company_name = item.xpath('.//td[5]/text()')[0]
+        registry = item.xpath('.//td[1]/text()')[0]
+        section = item.xpath('.//td[2]/text()')[0]
+        doc_number = item.xpath('.//td[3]/text()')[0]
+        region = item.xpath('.//td[4]/text()')[0]
+        address = item.xpath('.//td[7]/text()')[0]
+        order_number = item.xpath('.//td[8]/text()')[0]
+        order_date = item.xpath('.//td[9]/text()')[0]
+
+        inn_raw = item.xpath('.//td[6]/nobr/div[contains(text(), "ИНН")]/text()')
+
+        if len(inn_raw) == 0:
+            inn_raw = None
+        else:
+            pattern = re.compile(r'(^\w+:\s)')
+            inn_raw = re.sub(pattern, '', inn_raw[0])
+
+
+        full_fas_dict = {
+            'inn': inn_raw,
+            # 'kpp': kpp_list,
+            # 'ogrn': ogrn_list,
+            'company_name': company_name,
+            'registry': registry,
+            'section': section,
+            'doc_number': doc_number,
+            'region': region,
+            'address': address,
+            'order_number': order_number,
+            'order_date': order_date
+        }
+
+        instance = sessionsql.add(InnFas(**full_fas_dict))
+        sessionsql.commit()
+
+    except ValueError:
+        print(f"Проблема при разборе и записи входящих данных")
 
